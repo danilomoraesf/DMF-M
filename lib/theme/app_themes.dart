@@ -64,6 +64,7 @@ ThemeData buildTheme(prefs.UserPreferences preferences) {
   final scale = fontScaleMultiplier(preferences.fontScale);
   final isWide = preferences.spacingLevel == prefs.SpacingLevel.wide;
   final padding = isWide ? 20.0 : 12.0;
+  final noAnim = !preferences.animationsEnabled;
 
   final colorScheme = ColorScheme.fromSeed(
     seedColor: colors.primary,
@@ -76,6 +77,18 @@ ThemeData buildTheme(prefs.UserPreferences preferences) {
     useMaterial3: true,
     colorScheme: colorScheme,
     scaffoldBackgroundColor: colors.background,
+    splashFactory: noAnim ? NoSplash.splashFactory : null,
+    pageTransitionsTheme: noAnim
+        ? const PageTransitionsTheme(
+            builders: {
+              TargetPlatform.android: _NoAnimPageTransitionsBuilder(),
+              TargetPlatform.iOS: _NoAnimPageTransitionsBuilder(),
+              TargetPlatform.linux: _NoAnimPageTransitionsBuilder(),
+              TargetPlatform.macOS: _NoAnimPageTransitionsBuilder(),
+              TargetPlatform.windows: _NoAnimPageTransitionsBuilder(),
+            },
+          )
+        : null,
     cardTheme: CardThemeData(
       color: colors.card,
       margin: EdgeInsets.symmetric(
@@ -161,4 +174,19 @@ ThemeData buildTheme(prefs.UserPreferences preferences) {
       ),
     ),
   );
+}
+
+class _NoAnimPageTransitionsBuilder extends PageTransitionsBuilder {
+  const _NoAnimPageTransitionsBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return child;
+  }
 }

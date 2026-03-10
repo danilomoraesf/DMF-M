@@ -40,8 +40,19 @@ class PreferencesProvider extends ChangeNotifier {
     await _save();
   }
 
+  Future<void> toggleAnimations() async {
+    _preferences.animationsEnabled = !_preferences.animationsEnabled;
+    await _save();
+  }
+
   Future<void> toggleFocusMode() async {
     _preferences.focusMode = !_preferences.focusMode;
+    await _save();
+  }
+
+  Future<void> setCognitiveAlerts(bool enabled, int intervalMinutes) async {
+    _preferences.cognitiveAlerts.enabled = enabled;
+    _preferences.cognitiveAlerts.intervalMinutes = intervalMinutes;
     await _save();
   }
 

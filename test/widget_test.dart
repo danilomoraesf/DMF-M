@@ -36,6 +36,9 @@ void main() {
       expect(prefs.themeMode, ThemeMode.calm);
       expect(prefs.complexityLevel, ComplexityLevel.normal);
       expect(prefs.fontScale, FontScale.medium);
+      expect(prefs.animationsEnabled, true);
+      expect(prefs.cognitiveAlerts.enabled, false);
+      expect(prefs.cognitiveAlerts.intervalMinutes, 30);
     });
 
     test('serializa e deserializa corretamente', () {

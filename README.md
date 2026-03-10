@@ -30,10 +30,21 @@ Aplicativo mobile de gerenciamento de tarefas com foco em **acessibilidade cogni
 
 ## Como Rodar
 
+1. Instale o [Flutter SDK](https://docs.flutter.dev/get-started/install) (3.x ou superior)
+2. Clone o repositório:
+```bash
+git clone https://github.com/danilomoraesf/DMF-M.git
+cd DMF-M
+```
+3. Instale as dependências:
 ```bash
 flutter pub get
+```
+4. Execute o app:
+```bash
 flutter run -d chrome
 ```
+Para rodar em Android/iOS, conecte um dispositivo ou emulador e use flutter run sem o -d chrome.
 
 Ou para dispositivo mobile:
 

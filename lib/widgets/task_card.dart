@@ -129,6 +129,12 @@ class TaskCard extends StatelessWidget {
                 iconSize: 20,
               ),
             IconButton(
+              onPressed: () => _showEditDialog(context, provider, true),
+              icon: const Icon(Icons.edit_outlined),
+              tooltip: 'Editar',
+              iconSize: 20,
+            ),
+            IconButton(
               onPressed: () => _confirmDelete(context, provider),
               icon: const Icon(Icons.delete_outline, color: Colors.red),
               tooltip: 'Excluir',
@@ -205,13 +211,27 @@ class TaskCard extends StatelessWidget {
   }
 
   Widget _buildPopupMenu(BuildContext context, TaskProvider provider) {
+    final isSimple = context.read<PreferencesProvider>().preferences.complexityLevel ==
+        ComplexityLevel.simple;
     return PopupMenuButton<String>(
       onSelected: (value) {
-        if (value == 'delete') {
+        if (value == 'edit') {
+          _showEditDialog(context, provider, isSimple);
+        } else if (value == 'delete') {
           _confirmDelete(context, provider);
         }
       },
       itemBuilder: (_) => [
+        const PopupMenuItem(
+          value: 'edit',
+          child: Row(
+            children: [
+              Icon(Icons.edit, size: 20),
+              SizedBox(width: 8),
+              Text('Editar'),
+            ],
+          ),
+        ),
         const PopupMenuItem(
           value: 'delete',
           child: Row(
@@ -223,6 +243,68 @@ class TaskCard extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  void _showEditDialog(BuildContext context, TaskProvider provider, bool isSimple) {
+    final titleCtrl = TextEditingController(text: task.title);
+    final descCtrl = TextEditingController(text: task.description ?? '');
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Editar Tarefa'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: titleCtrl,
+              decoration: const InputDecoration(
+                labelText: 'Título',
+              ),
+              autofocus: true,
+            ),
+            if (!isSimple) ...[
+              const SizedBox(height: 12),
+              TextField(
+                controller: descCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Descrição (opcional)',
+                ),
+                maxLines: 3,
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final title = titleCtrl.text.trim();
+              if (title.isEmpty) {
+                showFriendlySnackBar(
+                  context,
+                  message: 'O título não pode ficar vazio.',
+                  isError: true,
+                );
+                return;
+              }
+              final desc = descCtrl.text.trim().isEmpty ? null : descCtrl.text.trim();
+              provider.updateTask(task.id, title, desc);
+              Navigator.pop(ctx);
+              showFriendlySnackBar(
+                context,
+                message: 'Tarefa atualizada!',
+                isSuccess: true,
+              );
+            },
+            child: const Text('Salvar'),
+          ),
+        ],
+      ),
     );
   }
 

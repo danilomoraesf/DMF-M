@@ -31,6 +31,14 @@ class TaskProvider extends ChangeNotifier {
     await _save();
   }
 
+  Future<void> updateTask(String id, String title, String? description) async {
+    final task = _tasks.firstWhere((t) => t.id == id);
+    task.title = title;
+    task.description = description;
+    task.updatedAt = DateTime.now().toIso8601String();
+    await _save();
+  }
+
   Future<void> deleteTask(String id) async {
     _tasks.removeWhere((t) => t.id == id);
     await _save();

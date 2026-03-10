@@ -15,7 +15,6 @@ class AccessibilityScreen extends StatelessWidget {
         builder: (context, provider, _) {
           final p = provider.preferences;
           final isSimple = p.complexityLevel == prefs.ComplexityLevel.simple;
-          final isDetailed = p.complexityLevel == prefs.ComplexityLevel.detailed;
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
@@ -37,12 +36,6 @@ class AccessibilityScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 _sectionTitle(context, 'Opções'),
                 SwitchListTile(
-                  title: const Text('Animações'),
-                  subtitle: const Text('Ativar ou desativar animações'),
-                  value: p.animationsEnabled,
-                  onChanged: (_) => provider.toggleAnimations(),
-                ),
-                SwitchListTile(
                   title: const Text('Modo Foco'),
                   subtitle:
                       const Text('Exibe apenas o título das tarefas, sem detalhes'),
@@ -61,11 +54,6 @@ class AccessibilityScreen extends StatelessWidget {
                     );
                   },
                 ),
-              ],
-              if (isDetailed) ...[
-                const SizedBox(height: 24),
-                _sectionTitle(context, 'Alertas Cognitivos'),
-                _buildCognitiveAlerts(context, provider, p),
               ],
               const SizedBox(height: 32),
               Center(
@@ -176,49 +164,6 @@ class AccessibilityScreen extends StatelessWidget {
           .toList(),
       selected: {p.spacingLevel},
       onSelectionChanged: (s) => provider.setSpacingLevel(s.first),
-    );
-  }
-
-  Widget _buildCognitiveAlerts(
-      BuildContext context, PreferencesProvider provider, prefs.UserPreferences p) {
-    return Column(
-      children: [
-        SwitchListTile(
-          title: const Text('Ativar alertas'),
-          subtitle: const Text('Lembretes periódicos de pausa'),
-          value: p.cognitiveAlerts.enabled,
-          onChanged: (val) =>
-              provider.setCognitiveAlerts(val, p.cognitiveAlerts.intervalMinutes),
-        ),
-        if (p.cognitiveAlerts.enabled)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                const Text('Intervalo: '),
-                SizedBox(
-                  width: 80,
-                  child: TextField(
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      isDense: true,
-                      suffixText: 'min',
-                    ),
-                    controller: TextEditingController(
-                      text: p.cognitiveAlerts.intervalMinutes.toString(),
-                    ),
-                    onSubmitted: (val) {
-                      final minutes = int.tryParse(val);
-                      if (minutes != null && minutes > 0) {
-                        provider.setCognitiveAlerts(true, minutes);
-                      }
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-      ],
     );
   }
 
